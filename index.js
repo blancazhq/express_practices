@@ -1,6 +1,7 @@
 var express = require("express");
 var app = express();
 var path = require('path');
+var fs = require("fs-promise")
 
 var animals = [
   { name: 'cats', favorite: true },
@@ -14,7 +15,6 @@ app.use(express.static(path.join(__dirname,'public')));
 
 app.set("view engine", "hbs");
 
-
 app.get("/fav_animals", function(req, res){
   res.render("fav_animals.hbs", {
     title:"favorite animal",
@@ -26,6 +26,14 @@ app.get("/fav_animals", function(req, res){
 //   var name=req.params.name;
 //   res.send("Hello "+name+"!");
 // });
+
+app.use(function myMiddleware(req, res, next){
+  console.log(req.method, req.path);
+  fs.appendFile("log.txt", (req.method+" "+req.path+"\n"))
+    .then(function(){
+      next();
+    })
+})
 
 app.get("/greet/:name", function(req, res){
   var name=req.params.name;
@@ -39,5 +47,5 @@ app.get("/greet/:name", function(req, res){
 });
 
 app.listen(3000, function(){
-  console.log("listening...")
+  console.log("listening 3000...")
 });
